@@ -1,28 +1,38 @@
 import React, { useState } from 'react';
+import useAxiosPublic from '../hooks/useAxiosPublic';
+import { toast } from 'react-toastify';
 
+const image_hosting_key = import.meta.env.VITE_IMAGE_HOST_KEY;
+const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
 
 
 const AddInfo = () => {
     const [imgPrev, setImgPrev] = useState('')
+const axiosPublic=useAxiosPublic()
+
 
     const handleAddress = async (e) => {
 
         e.preventDefault()
         const form = e.target;
         const name = form.name.value;
+        const photo = form.photo.files[0];
+        const address = form.address.value;
+        const extraInformation = form.extraInformation.value;
+
+
+        //help man
         const phone = form.phone.value;
         const email = form.email.value;
-        const photo = form.photo.files[0];
         const division = form.division.value;
         const district = form.district.value;
         const thana = form.thana.value;
-        const address = form.address.value;
-
-        const allInfo={name,phone,email,photo,division,district,thana,address}
-        console.table(allInfo)
+        const helpName = form.helpName.value;
+        const helpAddress = form.helpAddress.value;
+        const helpExtraInformation = form.helpExtraInformation.value;
 
         try {
-            if (photo) {
+         
                 //image upload 
                 const formData = new FormData();
                 formData.append('image', photo);
@@ -31,26 +41,16 @@ const AddInfo = () => {
                 });
                 const photoURL = res.data.data.display_url;
 
-                const updatedAddress = { name, phone, email, division, district, thana, address, photoURL }
+                const allInfo = { name, phone, email, division, district, thana, address, photoURL,extraInformation,helpName,helpAddress ,helpExtraInformation}
 
-                const resPut = await axioSecure.put(`/users-updated/${email}`, updatedAddress)
+                const resPost = await axiosPublic.post(`/add-post`, allInfo)
 
-                if (resPut.data.modifiedCount === 1) {
-                    toast('Profile Updated')
+                if (resPost.data.insertedId) {
+                    toast('আপনার তথ্যটি সংযুক্ত করা হয়েছে')
 
-                    navigate('/dashboard/profile')
+                  
                 }
-            } else {
-                const updatedAddress = { name, phone, email, division, district, thana, address }
-
-                const resPut = await axioSecure.put(`/users-updated/${email}`, updatedAddress)
-
-                if (resPut.data.modifiedCount === 1) {
-                    toast('Profile Updated')
-
-                    navigate('/dashboard/profile')
-                }
-            }
+            
         } catch (error) {
             console.log(error.message)
         }
@@ -70,73 +70,33 @@ const AddInfo = () => {
         <section className="dark:text-gray-900 w-[95%] md:mt-5 lg:mt-0 mx-auto bg-gray-200">
                 <form onSubmit={handleAddress} className="container flex flex-col mx-auto space-y-12">
                     <fieldset className="p-6 rounded-md shadow-sm dark:bg-gray-50">
-                        <div className="grid grid-cols-6 gap-4 col-span-full lg:col-span-3">
+                    <div className="text-center bg-slate-400 text-white p-1">
+                               <h3>নিখোঁজ ব্যক্তির তথ্য</h3>
+                     </div>
+                        <div className="grid grid-cols-6 gap-4 col-span-full lg:col-span-3 mt-5">
                             <div className="col-span-full sm:col-span-3">
-                                <label htmlFor="fullname" className="font-medium">Full Name</label>
+                                <label htmlFor="fullname" className="font-medium">নাম</label>
                                 <input
                                     id="fullName"
                                     name="name"
                                     type="text"
-                                    placeholder="Full Name"
+                                    placeholder="নাম লিখুন"
                                     className="w-full rounded-md focus:ring focus:ring-opacity-75 dark:text-gray-50 focus:dark:ring-default-600 dark:border-gray-300 p-2"
-                                    required
+                                    
                                 />
                             </div>
                             <div className="col-span-full sm:col-span-3">
-                                <label htmlFor="email" className="font-medium">Email</label>
+                                <label htmlFor="address" className="font-medium"> ঠিকানা <span className='text-sm'>(যদি বলতে পারে)</span></label>
                                 <input
-                                    id="email"
-                                    name="email"
+                                    id="address"
                                     type="text"
+                                    name="address"
+                                    placeholder="বিস্তারিত ঠিকানা লিখুন"
                                     className="w-full rounded-md focus:ring focus:ring-opacity-75 dark:text-gray-50 focus:dark:ring-default-600 dark:border-gray-300 p-2"
-                                    required
-                                    readOnly
+                                    
                                 />
                             </div>
-                            <div className="col-span-full sm:col-span-3">
-                                <label htmlFor="phone" className="font-medium">Phone</label>
-                                <input
-                                    id="phone"
-                                    type="text"
-                                    name="phone"
-                                    placeholder="Phone Number"
-                                    className="w-full rounded-md focus:ring focus:ring-opacity-75 dark:text-gray-50 focus:dark:ring-default-600 dark:border-gray-300 p-2"
-                                    required
-                                />
-                            </div>
-                            <div className="col-span-full sm:col-span-3">
-                                <label htmlFor="division" className="font-medium">Division</label>
-                                <input
-                                    id="division"
-                                    type="text"
-                                    name="division"
-                                    placeholder="Division"
-                                    className="w-full rounded-md focus:ring focus:ring-opacity-75 dark:text-gray-50 focus:dark:ring-default-600 dark:border-gray-300 p-2"
-                                    required
-                                />
-                            </div>
-                            <div className="col-span-full sm:col-span-3">
-                                <label htmlFor="district" className="font-medium">District</label>
-                                <input
-                                    id="district"
-                                    type="text"
-                                    name="district"
-                                    placeholder="District"
-                                    className="w-full rounded-md focus:ring focus:ring-opacity-75 dark:text-gray-50 focus:dark:ring-default-600 dark:border-gray-300 p-2"
-                                    required
-                                />
-                            </div>
-                            <div className="col-span-full sm:col-span-3">
-                                <label htmlFor="thana" className="font-medium">Thana</label>
-                                <input
-                                    id="thana"
-                                    type="text"
-                                    name="thana"
-                                    placeholder="Thana"
-                                    className="w-full rounded-md focus:ring focus:ring-opacity-75 dark:text-gray-50 focus:dark:ring-default-600 dark:border-gray-300 p-2"
-                                    required
-                                />
-                            </div>
+                            
                             <div className="col-span-full sm:col-span-3 text-center">
                                 <label>
                                     <input
@@ -146,9 +106,10 @@ const AddInfo = () => {
                                         name="photo"
                                         id="image"
                                         accept="image/*"
+                                        required
                                     />
                                     <div className="bg-rose-500 text-white border border-gray-300 rounded font-semibold cursor-pointer p-1 px-3 hover:bg-rose-600">
-                                        Upload Image
+                                        ছবি আপলোড
                                     </div>
                                 </label>
                             </div>
@@ -158,24 +119,121 @@ const AddInfo = () => {
                                 </div>
                             ) : (
                                 <div className="col-span-full sm:col-span-3 flex items-center text-red-600">
-                                    No file Selected
+                                    কোনো ছবি পাওয়া যায়নি
                                 </div>
                             )}
+                           
                             <div className="col-span-full">
-                                <label htmlFor="address" className="font-medium">Address</label>
-                                <input
-                                    id="address"
+                                <label htmlFor="Extra Information" className="font-medium">অন্যান্য তথ্য</label>
+                                <textarea
+                                    id="extra-information"
                                     type="text"
-                                    name="address"
-                                    placeholder="Building/House/Street"
+                                    name="extraInformation"
+                                    placeholder="এখানে লিখুন....."
                                     className="w-full rounded-md focus:ring focus:ring-opacity-75 dark:text-gray-50 focus:dark:ring-default-600 dark:border-gray-300 p-2"
-                                    required
+                                    
                                 />
                             </div>
                         </div>
+
+                        <div className="text-center bg-slate-400 text-white p-1 mt-5">
+                               <h3>পোস্ট দাতার তথ্য</h3>
+                     </div>
+                        <div className="grid grid-cols-6 gap-4 col-span-full lg:col-span-3 mt-5 ">
+                            <div className="col-span-full sm:col-span-3">
+                                <label htmlFor="fullname" className="font-medium">আপনার নাম</label>
+                                <input
+                                    id="fullName"
+                                    name="helpName"
+                                    type="text"
+                                    placeholder="আপনার নাম লিখুন"
+                                    className="w-full rounded-md focus:ring focus:ring-opacity-75 dark:text-gray-50 focus:dark:ring-default-600 dark:border-gray-300 p-2"
+                                    
+                                />
+                            </div>
+                            <div className="col-span-full sm:col-span-3">
+                                <label htmlFor="email" className="font-medium">ইমেইল <span className='text-sm'>(যদি থাকে)</span></label>
+                                <input
+                                    id="email"
+                                    name="email"
+                                    type="text"
+                                    className="w-full rounded-md focus:ring focus:ring-opacity-75 dark:text-gray-50 focus:dark:ring-default-600 dark:border-gray-300 p-2"
+                                    
+                                    placeholder='ই-মেইল লিখুন'
+                                />
+                            </div>
+                            <div className="col-span-full sm:col-span-3">
+                                <label htmlFor="phone" className="font-medium">ফোন</label>
+                                <input
+                                    id="phone"
+                                    type="text"
+                                    name="phone"
+                                    placeholder="ফোন নাম্বার লিখুন"
+                                    className="w-full rounded-md focus:ring focus:ring-opacity-75 dark:text-gray-50 focus:dark:ring-default-600 dark:border-gray-300 p-2"
+                                    
+                                />
+                            </div>
+                            <div className="col-span-full sm:col-span-3">
+                                <label htmlFor="division" className="font-medium">বিভাগ</label>
+                                <input
+                                    id="division"
+                                    type="text"
+                                    name="division"
+                                    placeholder="বিভাগ লিখুন"
+                                    className="w-full rounded-md focus:ring focus:ring-opacity-75 dark:text-gray-50 focus:dark:ring-default-600 dark:border-gray-300 p-2"
+                                    
+                                />
+                            </div>
+                            <div className="col-span-full sm:col-span-3">
+                                <label htmlFor="district" className="font-medium">জেলা</label>
+                                <input
+                                    id="district"
+                                    type="text"
+                                    name="district"
+                                    placeholder="জেলা লিখুন"
+                                    className="w-full rounded-md focus:ring focus:ring-opacity-75 dark:text-gray-50 focus:dark:ring-default-600 dark:border-gray-300 p-2"
+                                    
+                                />
+                            </div>
+                            <div className="col-span-full sm:col-span-3">
+                                <label htmlFor="thana" className="font-medium">থানা/উপজেলা</label>
+                                <input
+                                    id="thana"
+                                    type="text"
+                                    name="thana"
+                                    placeholder="থানা/উপজেলা লিখুন"
+                                    className="w-full rounded-md focus:ring focus:ring-opacity-75 dark:text-gray-50 focus:dark:ring-default-600 dark:border-gray-300 p-2"
+                                    
+                                />
+                            </div>
+                            <div className="col-span-full">
+                                <label htmlFor="helpAddress" className="font-medium">বিস্তারিত ঠিকানা</label>
+                                <input
+                                    id="helpAddress"
+                                    type="text"
+                                    name="helpAddress"
+                                    placeholder="বাসা/হোল্ডিং/গ্রাম/রাস্তা"
+                                    className="w-full rounded-md focus:ring focus:ring-opacity-75 dark:text-gray-50 focus:dark:ring-default-600 dark:border-gray-300 p-2"
+                                    
+                                />
+                            </div>
+                            <div className="col-span-full">
+                                <label htmlFor="help man Extra Information" className="font-medium">অন্যান্য তথ্য</label>
+                                <textarea
+                                    id="helpExtraInformation"
+                                    type="text"
+                                    name="helpExtraInformation"
+                                    placeholder="এখানে লিখুন....."
+                                    className="w-full rounded-md focus:ring focus:ring-opacity-75 dark:text-gray-50 focus:dark:ring-default-600 dark:border-gray-300 p-2"
+                                    
+                                />
+                            </div>
+                    </div>
+                            
+
                         <div className="mt-2">
                             <button type="submit" className="btn btn-secondary w-full">
-                                Confirm
+                                পোস্ট করুন
                             </button>
                         </div>
                     </fieldset>
