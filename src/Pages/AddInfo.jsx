@@ -9,6 +9,7 @@ const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_ke
 const AddInfo = () => {
     const [imgPrev, setImgPrev] = useState('')
 const axiosPublic=useAxiosPublic()
+const [selectedOption,setSelectedOption]=useState('')
 
 
     const handleAddress = async (e) => {
@@ -18,6 +19,7 @@ const axiosPublic=useAxiosPublic()
         const name = form.name.value;
         const photo = form.photo.files[0];
         const address = form.address.value;
+        const age = form.age.value;
         const extraInformation = form.extraInformation.value;
 
 
@@ -41,7 +43,7 @@ const axiosPublic=useAxiosPublic()
                 });
                 const photoURL = res.data.data.display_url;
 
-                const allInfo = { name, phone, email, division, district, thana, address, photoURL,extraInformation,helpName,helpAddress ,helpExtraInformation}
+                const allInfo = { name,age, phone, email, division, district, thana, address, photoURL,extraInformation,helpName,helpAddress,selectedOption ,helpExtraInformation}
 
                 const resPost = await axiosPublic.post(`/add-post`, allInfo)
 
@@ -86,6 +88,17 @@ const axiosPublic=useAxiosPublic()
                                 />
                             </div>
                             <div className="col-span-full sm:col-span-3">
+                                <label htmlFor="Age" className="font-medium"> আনুমানিক বয়স</label>
+                                <input
+                                    id="age"
+                                    type="text"
+                                    name="age"
+                                    placeholder="বয়স লিখুন"
+                                    className="w-full rounded-md focus:ring focus:ring-opacity-75 dark:text-gray-50 focus:dark:ring-default-600 dark:border-gray-300 p-2"
+                                    
+                                />
+                            </div>
+                            <div className="col-span-full ">
                                 <label htmlFor="address" className="font-medium"> ঠিকানা <span className='text-sm'>(যদি বলতে পারে)</span></label>
                                 <input
                                     id="address"
@@ -96,6 +109,7 @@ const axiosPublic=useAxiosPublic()
                                     
                                 />
                             </div>
+                          
                             
                             <div className="col-span-full sm:col-span-3 text-center">
                                 <label>
@@ -206,7 +220,7 @@ const axiosPublic=useAxiosPublic()
                                     
                                 />
                             </div>
-                            <div className="col-span-full">
+                            <div className="col-span-full sm:col-span-3">
                                 <label htmlFor="helpAddress" className="font-medium">বিস্তারিত ঠিকানা</label>
                                 <input
                                     id="helpAddress"
@@ -216,6 +230,17 @@ const axiosPublic=useAxiosPublic()
                                     className="w-full rounded-md focus:ring focus:ring-opacity-75 dark:text-gray-50 focus:dark:ring-default-600 dark:border-gray-300 p-2"
                                     
                                 />
+                            </div>
+                            <div className="col-span-full sm:col-span-3 w-full mt-2  md:mt-5 lg:mt-5">
+                          
+                            <select value={selectedOption}
+                            onChange={(e)=>setSelectedOption(e.target.value)}
+                            className="select select-bordered w-full " required>
+                                
+  <option disabled  value="">পোস্ট কেন করছেন?</option>
+  <option value="আমরা খুঁজছি">আমরা খুঁজছি</option>
+  <option value="আমরা পেয়েছি">আমরা পেয়েছি</option>
+</select>
                             </div>
                             <div className="col-span-full">
                                 <label htmlFor="help man Extra Information" className="font-medium">অন্যান্য তথ্য</label>
